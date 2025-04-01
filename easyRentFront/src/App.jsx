@@ -6,10 +6,12 @@ import LoginPage from "./Pages/LoginPage";
 
 function App() {
   return(
-    <Routes>
-      <Route path="/" element={<DashboardPage/>} />
-      <Route path="/login" element={<LoginPage/>} />
-    </Routes>
+    <div className="flex min-h-screen min-w-screen justify-center items-center">
+      <Routes>
+        <Route path="/" element={<DashboardPage/>} />
+        <Route path="/login" element={<LoginPage/>} />
+      </Routes>
+    </div>
   )
 }
 
