@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import AuthRoute from "./Authentification/AuthRoutes";
 import DashboardPage from "./Pages/DashboardPage";
-import LoginPage from "./Pages/LoginPage";
+import LoginPage from "./Pages/LoginPage/LoginPage";
 
 
 
