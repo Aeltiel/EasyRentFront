@@ -1,5 +1,5 @@
 import {  Navigate, Outlet } from "react-router-dom";
-//import { useAuth } from "./AuthContext";
+import { useAuth } from "./AuthContext";
 
 /*
 Ce fichier, sert à privatiser les routes afin que seul les personnes authentifier puisse
@@ -11,7 +11,7 @@ function AuthRoute() {
 
     return token ?
         <Outlet/>
-        : <Navigate to="/" />;
+        : <Navigate to="/login" />;
 }
 
 export default AuthRoute;

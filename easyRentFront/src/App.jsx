@@ -10,10 +10,9 @@ function App() {
 
     <div className="flex min-h-screen min-w-screen justify-center items-center">
       <Routes>
-        {/*<Route element={<AuthRoute/>}>
+        <Route element={<AuthRoute/>}>
         <Route path="/" element={<DashboardPage/>} />
-      </Route>*/}
-        <Route path="/" element={<DashboardPage/>} />
+      </Route>
         <Route path="/login" element={<LoginPage/>} />
       </Routes>
     </div>
