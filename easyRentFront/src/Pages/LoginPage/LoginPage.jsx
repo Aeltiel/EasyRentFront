@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "../../Authentification/AuthContext";
 import './LoginPage.css'
 
 function LoginPage() {
@@ -6,6 +7,8 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  // Importer le hook personnalisé pour l'authentification
+  const {updateToken} = useAuth(); 
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -30,6 +33,8 @@ function LoginPage() {
       }
 
       const data = await response.json();
+      // Enregistrer le token dans le localStorage
+      updateToken(data); // Appeler la fonction pour mettre à jour le token
       console.log('Connexion réussie', data);
 
       window.location.href = '/';
