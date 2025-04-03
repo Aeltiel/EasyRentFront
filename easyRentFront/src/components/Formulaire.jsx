@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "../Authentification/AuthContext";
  // Importer le composant Nav
 
 
@@ -13,9 +14,11 @@ function Formulaire() {
   const [codePostal, setCodePostal] = useState("");
   const [message, setMessage] = useState("");
   const [numeros, setNum] = useState("");
+  const { token } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
 
     // Vérification basique des champs
     if (!titre || !loyer || !surface || !ville || !rue || !codePostal) {
@@ -35,10 +38,12 @@ function Formulaire() {
       users,
     };
 
+
     try {
       const response = await fetch("http://localhost:8080/api/biens", {
         method: "POST",
         headers: {
+          'Authorization': `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(bienData),

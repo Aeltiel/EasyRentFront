@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Nav from './Nav';
+import { useAuth } from '../Authentification/AuthContext';
 
 function DetailBien() {
   const { id } = useParams(); // Récupère l'ID du bien depuis l'URL
   const [bien, setBien] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const { token } = useAuth();
   useEffect(() => {
     const fetchBien = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/biens/${id}`); // Remplacez par votre URL d'API
+        const response = await fetch(`http://localhost:8080/api/biens/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        }); // Remplacez par votre URL d'API
         if (!response.ok) {
           throw new Error('Erreur lors de la récupération du bien.');
         }
@@ -40,7 +46,7 @@ function DetailBien() {
   }
 
   return (
-    <div>
+    <div className='w-full'>
 
     <div className="bg-white mb-2 shadow-lg rounded-lg">
             <Nav />
