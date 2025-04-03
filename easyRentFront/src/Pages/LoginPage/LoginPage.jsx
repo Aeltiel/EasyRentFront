@@ -49,7 +49,9 @@ function LoginPage() {
 
   return (
     <>
-      <div className="flex min-h-full justify-center shadow-lg">
+    <div className=" w-full flex justify-center items-center ">
+
+      <div className="flex justify-center shadow-lg h-[70%]">
         <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-12 bg-white">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm">
             <img
@@ -119,6 +121,8 @@ function LoginPage() {
         </div>
 
       </div>
+    </div>
+
     </>
   );
 }
