@@ -11,14 +11,13 @@ function BienList() {
   const [villeRecherche, setVilleRecherche] = useState(""); // État pour la ville saisie
   const { token } = useAuth();
 
+
   useEffect(() => {
     const fetchBiens = async () => {
       try {
-        console.log("Token utilisé:", token.token);
         const response = await fetch("http://localhost:8080/api/biens", {
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
           },
         });
         if (!response.ok) {
