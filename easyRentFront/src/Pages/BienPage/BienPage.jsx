@@ -1,5 +1,4 @@
-import { useState } from "react";
-import Nav from "../../components/Nav"; // Importer le composant Nav
+import Nav from "../../components/Nav";
 import Formulaire from "../../components/Formulaire";
 import BienList from "../../components/ListsBien/ListBien";
 

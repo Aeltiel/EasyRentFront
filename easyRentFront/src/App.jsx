@@ -18,6 +18,7 @@ function App() {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/bien" element={<BienPage />} />
           <Route path="/bien/:id" element={<DetailBien />} />
+          <Route path="/modification/bien/:id" element={<DetailBien />} />
         </Route>
       </Routes>
     </div>
