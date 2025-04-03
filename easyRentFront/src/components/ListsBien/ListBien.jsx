@@ -9,18 +9,14 @@ function BienList() {
   const [biens, setBiens] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-
-    const { token } = useAuth(); // Utilisez le hook pour accéder au token parsé
+  const { token } = useAuth(); // Utilisez le hook pour accéder au token parsé
 
   useEffect(() => {
     const fetchBiens = async () => {
       try {
-        console.log("Token utilisé:", token.token);
         const response = await fetch("http://localhost:8080/api/biens", {
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
           },
         });
         if (!response.ok) {
