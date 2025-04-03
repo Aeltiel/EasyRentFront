@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useAuth } from "../Authentification/AuthContext";
- // Importer le composant Nav
 
 
 function Formulaire() {
-  // Initialiser les états pour chaque champ
   const [titre, setTitre] = useState("");
   const [loyer, setLoyer] = useState(0);
   const [type, setType] = useState("Appartement");
