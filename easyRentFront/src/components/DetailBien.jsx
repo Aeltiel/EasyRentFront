@@ -17,6 +17,7 @@ function DetailBien() {
   const [ajoutLocataireReussi, setAjoutLocataireReussi] = useState(false);
   const [locataireAjoute, setLocataireAjoute] = useState(null);
   const [locataires, setLocataires] = useState([]);
+  const [locatairesLoading, setLocatairesLoading] = useState(true); // Ajout d'un état de chargement pour les locataires
 
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -41,28 +42,46 @@ function DetailBien() {
     }
   };
 
-  const fetchLocataires = async () => {
+  const fetchLocataires = async (locataireLinks) => {
+    if (!locataireLinks || locataireLinks.length === 0) {
+      setLocataires([]);
+      setLocatairesLoading(false);
+      return;
+    }
+
     try {
-      const response = await fetch(`http://localhost:8080/api/locataires?biens=/api/biens/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      if (!response.ok) {
-        throw new Error(`Erreur lors de la récupération des locataires: ${response.status}`);
-      }
-      const data = await response.json();
-      setLocataires(data);
+      const locataireIds = locataireLinks.map((link) => link.split('/').pop());
+      const locatairesData = await Promise.all(
+        locataireIds.map(async (locataireId) => {
+          const response = await fetch(`http://localhost:8080/api/locataires/${locataireId}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          if (!response.ok) {
+            throw new Error(`Erreur lors de la récupération du locataire ${locataireId}: ${response.status}`);
+          }
+          return await response.json();
+        })
+      );
+      setLocataires(locatairesData);
+      setLocatairesLoading(false);
     } catch (err) {
       setError(err.message);
+      setLocatairesLoading(false);
     }
   };
 
   useEffect(() => {
     fetchBien();
-    fetchLocataires();
   }, [id, token]);
+
+  useEffect(() => {
+    if (bien && bien.locataires) {
+      fetchLocataires(bien.locataires);
+    }
+  }, [bien]);
 
   const supprimerBien = async () => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce bien ?')) {
@@ -110,11 +129,13 @@ function DetailBien() {
     setAfficherFormulaireLocataire(false);
     setAjoutLocataireReussi(true);
     setLocataireAjoute(newLocataire);
-    fetchLocataires();
+    if (bien && bien.locataires) {
+      fetchLocataires(bien.locataires);
+    }
     console.log('Locataire ajouté avec succès:', newLocataire);
   };
 
-  if (loading) {
+  if (loading || locatairesLoading) {
     return <p>Chargement...</p>;
   }
 
