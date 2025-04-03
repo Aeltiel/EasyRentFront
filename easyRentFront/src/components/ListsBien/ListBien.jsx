@@ -3,51 +3,40 @@ import { useState, useEffect } from "react";
 import Nav from "../Nav";
 import { Link } from "react-router-dom";
 import './ListBien.css'
+import { useAuth } from "../../Authentification/AuthContext";
 
 function BienList() {
   const [biens, setBiens] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
 
-    useEffect(() => {
-      const fetchBiens = async () => {
-        try {
-          const storedToken = localStorage.getItem('token');
-          let token = '';
-          if (storedToken) {
-            try {
-              const parsedToken = JSON.parse(storedToken);
-              if (parsedToken && parsedToken.token) {
-                token = parsedToken.token;
-              } else {
-                token = storedToken; // Si le parsing réussit mais la propriété 'token' est absente
-              }
-            } catch (error) {
-              token = storedToken; // Si le parsing échoue, utilise la valeur brute
-            }
-          }
-          console.log("Token utilisé:", token);
-          const response = await fetch("http://localhost:8080/api/biens", {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          });
-          if (!response.ok) {
-            throw new Error("Erreur lors du chargement des biens");
-          }
-          const data = await response.json();
-          setBiens(data);
-        } catch (err) {
-          setError(err.message);
-        } finally {
-          setLoading(false);
+    const { token } = useAuth(); // Utilisez le hook pour accéder au token parsé
+
+  useEffect(() => {
+    const fetchBiens = async () => {
+      try {
+        console.log("Token utilisé:", token.token);
+        const response = await fetch("http://localhost:8080/api/biens", {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!response.ok) {
+          throw new Error("Erreur lors du chargement des biens");
         }
-      };
+        const data = await response.json();
+        setBiens(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      fetchBiens();
-    }, []);
-
+    fetchBiens();
+  }, [token]); // Le useEffect dépend maintenant du token parsé
   if (loading) return <p className="text-center">Chargement des biens...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
