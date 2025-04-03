@@ -1,3 +1,4 @@
+import Nav from "../components/Nav";
 import { useAuth } from "../Authentification/AuthContext";
 import { useLocation } from "react-router-dom";
 
@@ -11,6 +12,9 @@ function DashboardPage() {
   }
   if(token){
     return (
+      <div className="bg-white mb-2 shadow-lg rounded-lg">
+            <Nav />
+      </div>
       <div>
         <h1>Dashboard</h1>
         <p>Welcome to the Dashboard!</p>
