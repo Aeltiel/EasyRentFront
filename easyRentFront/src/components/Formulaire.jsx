@@ -26,6 +26,8 @@ function Formulaire() {
 
     const adresse = `${numeros} ${rue} ${codePostal} ${ville}`;
     const users = "http://localhost:8080/api/users/1";
+    const actif = true;
+    const locataire = []
 
     const bienData = {
       titre,
@@ -34,6 +36,8 @@ function Formulaire() {
       surface,
       adresse,
       users,
+      actif,
+      locataire
     };
 
 

@@ -5,6 +5,7 @@ import LoginPage from "./Pages/LoginPage/LoginPage";
 import BienPage from "./Pages/BienPage/BienPage";
 import DetailBien from "./components/DetailBien";
 import AuthRoute from "./Authentification/AuthRoutes";
+import ModificationPage from "./Pages/ModificationPage/ModificationPage";
 
 function App() {
   return (
@@ -18,7 +19,7 @@ function App() {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/bien" element={<BienPage />} />
           <Route path="/bien/:id" element={<DetailBien />} />
-          <Route path="/modification/bien/:id" element={<DetailBien />} />
+          <Route path="/modification/bien/:id" element={<ModificationPage />} />
         </Route>
       </Routes>
     </div>

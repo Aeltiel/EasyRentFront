@@ -4,6 +4,7 @@ import Nav from './Nav';
 import { useAuth } from '../Authentification/AuthContext';
 import FormulaireLoc from './FormulaireLoc';
 
+
 function DetailBien() {
   const { id } = useParams();
   const [bien, setBien] = useState(null);
@@ -18,6 +19,7 @@ function DetailBien() {
   const [locataireAjoute, setLocataireAjoute] = useState(null);
   const [locataires, setLocataires] = useState([]);
   const [locatairesLoading, setLocatairesLoading] = useState(true); // Ajout d'un état de chargement pour les locataires
+
 
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -109,14 +111,7 @@ function DetailBien() {
   };
 
   const modifierBien = () => {
-    setBienAModifier(bien);
-    setModificationEnCours(true);
     navigate(`/modification/bien/${id}`, { state: { bienData: bien } });
-  };
-
-  const handleModificationTerminee = (bienModifie) => {
-    setBien(bienModifie);
-    setModificationEnCours(false);
   };
 
   const handleAjouterLocataireClick = () => {
