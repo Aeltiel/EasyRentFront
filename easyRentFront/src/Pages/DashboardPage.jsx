@@ -12,6 +12,7 @@ function DashboardPage() {
   }
   if(token){
     return (
+      <>
       <div className="bg-white mb-2 shadow-lg rounded-lg">
             <Nav />
       </div>
@@ -19,6 +20,7 @@ function DashboardPage() {
         <h1>Dashboard</h1>
         <p>Welcome to the Dashboard!</p>
       </div>
+      </>
     );
   }
 }
