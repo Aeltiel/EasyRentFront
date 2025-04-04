@@ -314,7 +314,6 @@ function DetailBien() {
                 <h4 className="font-semibold text-2xl pb-5">{locataire.nom} {locataire.prenom}</h4>
                 <p className="pb-5">Email : {locataire.email}</p>
                 <p className="pb-5">Téléphone : {locataire.telephone}</p>
-<<<<<<< HEAD
                 <strong>
                 <h2>Documents</h2>
                 {documentsParLocataire[locataire.id] && documentsParLocataire[locataire.id].length > 0 ? (
@@ -342,24 +341,6 @@ function DetailBien() {
               {selectedFile && locataireIdPourDocument === locataire.id && (
                 <button onClick={handleUploadDocument}>Envoyer Document</button>
               )}
-=======
-                <strong><h2>Documents</h2></strong>
-                <button
-                  onClick={() => handleAjoutDocumentClick(locataire.id)}
-                  className="bg-green-500 hover:bg-green-700 text-white font-bold rounded-full w-8 h-8 flex items-center justify-center mt-4"
-                >
-                  +
-                </button>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  style={{ display: 'none' }}
-                  onChange={handleFileChange}
-                />
-                {selectedFile && locataireIdPourDocument === locataire.id && (
-                  <button onClick={handleUploadDocument}>Envoyer Document</button>
-                )}
->>>>>>> f6ab3a96e8d7c10a637fe052d4d8f677606d589a
               </div>
             ))}
           </div>
