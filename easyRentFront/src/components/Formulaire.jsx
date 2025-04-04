@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useAuth } from "../Authentification/AuthContext";
- // Importer le composant Nav
 
 
 function Formulaire() {
-  // Initialiser les états pour chaque champ
   const [titre, setTitre] = useState("");
   const [loyer, setLoyer] = useState(0);
   const [type, setType] = useState("Appartement");
@@ -28,6 +26,8 @@ function Formulaire() {
 
     const adresse = `${numeros} ${rue} ${codePostal} ${ville}`;
     const users = "http://localhost:8080/api/users/1";
+    const actif = true;
+    const locataire = []
 
     const bienData = {
       titre,
@@ -36,6 +36,8 @@ function Formulaire() {
       surface,
       adresse,
       users,
+      actif,
+      locataire
     };
 
 
