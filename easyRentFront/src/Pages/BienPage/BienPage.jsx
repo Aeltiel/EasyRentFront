@@ -17,11 +17,6 @@ function BienPage() {
         <div className="bg-white mb-2 shadow-lg rounded-lg">
             <Formulaire />
         </div>
-        <div className="bg-white mb-2 shadow-lg rounded-lg">
-            <FormulaireLoc />
-        </div>
-
-        
     </div>
     </>
   );
