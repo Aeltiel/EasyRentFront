@@ -16,6 +16,7 @@ function Nav() {
         <div className="space-x-4 text-black">
           <Link to="/" className="!text-black">Accueil</Link>
           <Link to="/bien" className="!text-black">Mes biens</Link>
+          <Link to="/locataires" className="!text-black">Mes locataires</Link>
           <Link to="" className="!text-red">Déconnexion</Link>
         </div>
       </div>
