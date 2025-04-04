@@ -3,6 +3,7 @@ import FormulaireLoc from "../components/FormulaireLoc";
 import { useAuth } from "../Authentification/AuthContext";
 import { useLocation, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import LocataireList from "../components/LocataireList";
 
 function LocatairePage() {
   const { token } = useAuth();
@@ -27,6 +28,7 @@ function LocatairePage() {
         <Nav />
       </div>
       <div>
+        <LocataireList />
       </div>
     </main>
   );
