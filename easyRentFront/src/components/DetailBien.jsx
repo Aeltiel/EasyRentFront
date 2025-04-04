@@ -45,6 +45,7 @@ function DetailBien() {
     }
   };
 
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
@@ -316,6 +317,15 @@ function DetailBien() {
                 <p className="pb-5">Téléphone : {locataire.telephone}</p>
                 <strong>
                 <h2>Documents</h2>
+                {documentsParLocataire[locataire.id] && documentsParLocataire[locataire.id].length > 0 ? (
+                  <ul>
+                    {documentsParLocataire[locataire.id].map((document) => (
+                      <li key={document.id}>{document.nom}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>Aucun document pour ce locataire.</p>
+                )}
               </strong>
               <button
                 onClick={() => handleAjoutDocumentClick(locataire.id)}
