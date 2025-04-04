@@ -6,6 +6,7 @@ import BienPage from "./Pages/BienPage/BienPage";
 import DetailBien from "./components/DetailBien";
 import AuthRoute from "./Authentification/AuthRoutes";
 import ModificationPage from "./Pages/ModificationPage/ModificationPage";
+import LocatairePage from "./Pages/LocatairePage";
 
 function App() {
   return (
@@ -13,13 +14,14 @@ function App() {
       <Routes>
         {/* Route publique */}
         <Route path="/login" element={<LoginPage />} />
-          <Route path="/" element={<DashboardPage />} />
 
         {/* Routes protégées */}
         <Route element={<AuthRoute />}>
+          <Route path="/" element={<DashboardPage />} />
           <Route path="/bien" element={<BienPage />} />
           <Route path="/bien/:id" element={<DetailBien />} />
           <Route path="/modification/bien/:id" element={<ModificationPage />} />
+          <Route path="/locataires" element={<LocatairePage/>}/>
         </Route>
       </Routes>
     </div>

@@ -17,9 +17,9 @@ function DashboardPage() {
     return <div>Chargement en cours...</div>;
   }
 
-  /*if (!token) {
+  if (!token) {
     return <Navigate to="/login" state={{ from: location }} replace />;
-  }*/
+  }
 
   return (
     <main className="w-full">
