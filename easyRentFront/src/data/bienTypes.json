@@ -1,0 +1,32 @@
+{
+  "types": [
+    "Appartement",
+    "Maison individuelle",
+    "Studio",
+    "Maison de ville",
+    "Duplex",
+    "Pavillon",
+    "Villa",
+    "Loft",
+    "Triplex",
+    "Garage",
+    "Parking",
+    "Local commercial",
+    "Bureau individuel",
+    "Local professionnel",
+    "Chambre en colocation",
+    "Chambre étudiante",
+    "Open space",
+    "Entrepôt",
+    "Atelier",
+    "Box fermé",
+    "Cave",
+    "Chalet",
+    "Bateau logement",
+    "Yourte",
+    "Cabane",
+    "Tiny house",
+    "Container aménagé",
+    "Abri de jardin"
+  ]
+}
