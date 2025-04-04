@@ -20,15 +20,22 @@ function DashboardPage() {
     }
     const dataPaiements = await response.json();
     setPayments(dataPaiements);
+    setLoading(false);
   }
 
   useEffect(() => {
-    getPayments();
+    if(token){
+      getPayments();
+    }
+    
     // Simuler un chargement asynchrone (ex: vérification du token)
-    setTimeout(() => setLoading(false), 1000);
+    let timer = setTimeout(() => setLoading(false), 1000);
 
-  }, [paiements]);
-  
+    return () => {
+      clearTimeout(timer);
+    }
+  }, [token]);
+
   console.log(paiements);
 
   if (loading) {
