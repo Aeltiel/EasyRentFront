@@ -7,11 +7,29 @@ function DashboardPage() {
   const location = useLocation();
   const { token } = useAuth(); // Récupérer le token via le contexte d'authentification
   const [loading, setLoading] = useState(true);
+  const [paiements, setPayments] = useState([]);
+
+  //appel à l'api pour récupérer les paiements
+  const getPayments = async () => {
+    const response = await fetch("http://localhost:8080/api/paiements", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response) {
+      console.log("Requête échouée avec le status : " + response.status);
+      return;
+    }
+    const dataPaiements = await response.json();
+    setPayments(dataPaiements);
+  }
 
   useEffect(() => {
+    getPayments();
     // Simuler un chargement asynchrone (ex: vérification du token)
     setTimeout(() => setLoading(false), 1000);
-  }, []);
+
+  }, [paiements]);
+  
+  console.log(paiements);
 
   if (loading) {
     return <div>Chargement en cours...</div>;

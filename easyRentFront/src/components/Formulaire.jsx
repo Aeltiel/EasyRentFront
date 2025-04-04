@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../Authentification/AuthContext";
 
-
 function Formulaire() {
   const [titre, setTitre] = useState("");
   const [loyer, setLoyer] = useState(0);
@@ -12,10 +11,32 @@ function Formulaire() {
   const [codePostal, setCodePostal] = useState("");
   const [message, setMessage] = useState("");
   const [numeros, setNum] = useState("");
+  const [user_id, setUserId] = useState(0);
   const { token } = useAuth();
+
+
+
+  function decodeJwtPayload(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+}
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    try {
+      const decodedPayload = decodeJwtPayload(token);
+      setUserId(decodedPayload.user_id);
+    } catch (error) {
+      console.error("Erreur de décodage:", error);
+    }
 
 
     // Vérification basique des champs
@@ -25,7 +46,7 @@ function Formulaire() {
     }
 
     const adresse = `${numeros} ${rue} ${codePostal} ${ville}`;
-    const users = "http://localhost:8080/api/users/1";
+    const users = `http://localhost:8080/api/users/${user_id}`
     const actif = true;
     const locataire = []
 
@@ -53,6 +74,7 @@ function Formulaire() {
 
       if (response.ok) {
         setMessage("Bien ajouté avec succès !");
+        window.location.reload();
       } else {
         setMessage("Erreur lors de l'ajout du bien.");
       }

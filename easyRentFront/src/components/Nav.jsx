@@ -23,7 +23,7 @@ function Nav() {
           <Link to="/payments" className="!text-black">Paiements</Link>
           <button 
             onClick={logOut} 
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+            className="!bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
           >
             Déconnexion
           </button>

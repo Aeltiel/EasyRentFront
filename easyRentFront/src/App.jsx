@@ -6,6 +6,7 @@ import BienPage from "./Pages/BienPage/BienPage";
 import DetailBien from "./components/DetailBien";
 import AuthRoute from "./Authentification/AuthRoutes";
 import ModificationPage from "./Pages/ModificationPage/ModificationPage";
+import FormulaireLocataireModification from "./components/FormulaireLocataireModification";
 import LocatairePage from "./Pages/LocatairePage";
 import PaymentPage from "./Pages/PaymentPage";
 
@@ -22,6 +23,7 @@ function App() {
           <Route path="/bien" element={<BienPage />} />
           <Route path="/bien/:id" element={<DetailBien />} />
           <Route path="/modification/bien/:id" element={<ModificationPage />} />
+          <Route path="/modification/locataire/:id" element={<FormulaireLocataireModification />} />
           <Route path="/locataires" element={<LocatairePage/>}/>
           <Route path="/payments" element={<PaymentPage/>}/>
         </Route>
