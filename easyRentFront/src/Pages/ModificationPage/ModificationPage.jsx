@@ -80,9 +80,7 @@ function ModificationPage() {
   return (
     <>
       <div className="w-full">
-        <div className="bg-white mb-2 shadow-lg rounded-lg">
-          <Nav />
-        </div>
+        
 
         <h1 className="mb-6">Modifier un bien</h1>
         <form className="w-full" onSubmit={handleSubmit}>

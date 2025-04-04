@@ -27,7 +27,6 @@ function LocatairePage() {
         <Nav />
       </div>
       <div>
-        <FormulaireLoc />
       </div>
     </main>
   );
