@@ -23,6 +23,7 @@ function DetailBien() {
   const [base64Blob, setBase64Blob] = useState('');
   const [locataireIdPourDocument, setLocataireIdPourDocument] = useState(null);
   const [documentsParLocataire, setDocumentsParLocataire] = useState({});
+  const [titreFichierSelectionne, setTitreFichierSelectionne] = useState('');
 
   const fileInputRef = useRef(null);
 
@@ -81,6 +82,11 @@ function DetailBien() {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
+    if (file) {
+      setTitreFichierSelectionne(file.name);
+    } else {
+      setTitreFichierSelectionne('');
+    }
 
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -117,6 +123,13 @@ function DetailBien() {
         setSelectedFile(null);
         setBase64Blob('');
         setLocataireIdPourDocument(null);
+        setTitreFichierSelectionne(''); // Réinitialiser le titre affiché
+        // Récupérer à nouveau les documents pour afficher la mise à jour
+        locataires.forEach((locataire) => {
+          if (locataire.id === locataireIdPourDocument) {
+            fetchDocuments(locataire.id);
+          }
+        });
       } else {
         alert('Erreur lors de l\'envoi du document.');
       }
@@ -185,12 +198,6 @@ function DetailBien() {
   useEffect(() => {
     fetchBien();
   }, [id, token]);
-
-  useEffect(() => {
-    if (bien && bien.locataires) {
-      fetchLocataires(bien.locataires);
-    }
-  }, [bien]);
 
   const supprimerBien = async () => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce bien ?')) {
@@ -345,32 +352,37 @@ function DetailBien() {
                 <p className="pb-5">Email : {locataire.email}</p>
                 <p className="pb-5">Téléphone : {locataire.telephone}</p>
                 <strong>
-                <h2>Documents</h2>
-                {documentsParLocataire[locataire.id] && documentsParLocataire[locataire.id].length > 0 ? (
-                  <ul>
-                    {documentsParLocataire[locataire.id].map((document) => (
-                      <li key={document.id}>{document.nom}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>Aucun document pour ce locataire.</p>
-                )}
-              </strong>
-              <button
-                onClick={() => handleAjoutDocumentClick(locataire.id)}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold rounded-full w-8 h-8 flex items-center justify-center mt-4"
-              >
-                +
-              </button>
-              <input
-                type="file"
-                ref={fileInputRef}
-                style={{ display: 'none' }}
-                onChange={handleFileChange}
-              />
-              {selectedFile && locataireIdPourDocument === locataire.id && (
-                <button onClick={handleUploadDocument}>Envoyer Document</button>
-              )}
+                  <h2>Documents</h2>
+                  {documentsParLocataire[locataire.id] && documentsParLocataire[locataire.id].length > 0 ? (
+                    <ul>
+                      {documentsParLocataire[locataire.id].map((document) => (
+                        <li key={document.id}>{document.nom}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>Aucun document pour ce locataire.</p>
+                  )}
+                </strong>
+                <div className="flex items-center mt-4">
+                  <button
+                    onClick={() => handleAjoutDocumentClick(locataire.id)}
+                    className="bg-green-500 hover:bg-green-700 text-white font-bold rounded-full w-8 h-8 flex items-center justify-center"
+                  >
+                    +
+                  </button>
+                  {locataireIdPourDocument === locataire.id && titreFichierSelectionne && (
+                    <span className="ml-2">{titreFichierSelectionne}</span>
+                  )}
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    onChange={handleFileChange}
+                  />
+                  {selectedFile && locataireIdPourDocument === locataire.id && (
+                    <button onClick={handleUploadDocument} className="ml-2 text-white">Envoyer Document</button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
