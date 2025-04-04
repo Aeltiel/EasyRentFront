@@ -1,8 +1,11 @@
 // components/Nav.js
 
 import { Link } from "react-router-dom";
+import { useAuth } from "../Authentification/AuthContext";
 
 function Nav() {
+  const { logOut } = useAuth();
+
   return (
     <nav className="bg-white p-4 w-full rounded-sm">
       <div className="flex justify-between items-center ">
@@ -17,7 +20,13 @@ function Nav() {
           <Link to="/" className="!text-black">Accueil</Link>
           <Link to="/bien" className="!text-black">Mes biens</Link>
           <Link to="/locataires" className="!text-black">Mes locataires</Link>
-          <Link to="" className="!text-red">Déconnexion</Link>
+          <Link to="/payments" className="!text-black">Paiements</Link>
+          <button 
+            onClick={logOut} 
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+          >
+            Déconnexion
+          </button>
         </div>
       </div>
     </nav>
