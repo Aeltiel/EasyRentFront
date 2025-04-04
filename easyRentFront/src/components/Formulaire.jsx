@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useAuth } from "../Authentification/AuthContext";
+import bienTypes from "../data/bienTypes.json";
 
 function Formulaire() {
   const [titre, setTitre] = useState("");
   const [loyer, setLoyer] = useState(0);
-  const [type, setType] = useState("Appartement");
+  const [type, setType] = useState(bienTypes.types[0]); // Utilisation du premier type par défaut
   const [surface, setSurface] = useState(0);
   const [ville, setVille] = useState("");
   const [rue, setRue] = useState("");
@@ -14,8 +15,6 @@ function Formulaire() {
   const [user_id, setUserId] = useState(0);
   const { token } = useAuth();
 
-
-
   function decodeJwtPayload(token) {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -24,9 +23,7 @@ function Formulaire() {
     }).join(''));
 
     return JSON.parse(jsonPayload);
-}
-
-
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,7 +34,6 @@ function Formulaire() {
     } catch (error) {
       console.error("Erreur de décodage:", error);
     }
-
 
     // Vérification basique des champs
     if (!titre || !loyer || !surface || !ville || !rue || !codePostal) {
@@ -60,7 +56,6 @@ function Formulaire() {
       actif,
       locataire
     };
-
 
     try {
       const response = await fetch("http://localhost:8080/api/biens", {
@@ -202,20 +197,18 @@ function Formulaire() {
               className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
               htmlFor="type"
             >
-              Type
+              Type de bien
             </label>
-            <div className="relative">
-              <select
-                id="type"
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-                className="appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white"
-              >
-                <option>Appartement</option>
-                <option>Maison</option>
-                <option>Studio</option>
-              </select>
-            </div>
+            <select
+              id="type"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white"
+            >
+              {bienTypes.types.map((typeOption) => (
+                <option key={typeOption} value={typeOption}>{typeOption}</option>
+              ))}
+            </select>
           </div>
 
           <div className="w-full md:w-1/3 px-3">

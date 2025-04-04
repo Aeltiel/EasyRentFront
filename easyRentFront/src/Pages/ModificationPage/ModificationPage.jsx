@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Nav from "../../components/Nav";
 import { useLocation, useParams } from "react-router-dom";
 import { useAuth } from "../../Authentification/AuthContext";
+import bienTypes from "../../data/bienTypes.json";
 
 function ModificationPage() {
   const { id } = useParams();
@@ -143,6 +144,21 @@ function ModificationPage() {
                 onChange={(e) => setLoyer(Number(e.target.value))}
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white"
               />
+            </div>
+            <div className="w-full md:w-1/3 px-3">
+              <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="type">
+                Type de bien
+              </label>
+              <select
+                id="type"
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white"
+              >
+                {bienTypes.types.map((typeOption) => (
+                  <option key={typeOption} value={typeOption}>{typeOption}</option>
+                ))}
+              </select>
             </div>
           </div>
 
