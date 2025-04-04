@@ -4,8 +4,7 @@ import { useAuth } from "../Authentification/AuthContext";
 function PaymentForm({ onPaymentAdded }) {
   const [montant, setMontant] = useState(0);
   const [datePaiement, setDatePaiement] = useState("");
-  const [moisConcerne, setMoisConcerne] = useState("");
-  const [status, setStatus] = useState("En attente");
+  const [status, setStatus] = useState("attente");
   const [locataireId, setLocataireId] = useState("");
   const [locataires, setLocataires] = useState([]);
   const [message, setMessage] = useState("");
@@ -43,7 +42,7 @@ function PaymentForm({ onPaymentAdded }) {
     setLoading(true);
 
     // Basic validation
-    if (!montant || !datePaiement || !moisConcerne || !locataireId) {
+    if (!montant || !datePaiement || !locataireId) {
       setMessage("Tous les champs doivent être remplis");
       setLoading(false);
       return;
@@ -52,7 +51,6 @@ function PaymentForm({ onPaymentAdded }) {
     const paymentData = {
       montant: Number(montant),
       datePaiement,
-      moisConcerne,
       status,
       locataire: `/api/locataires/${locataireId}`
     };
@@ -73,8 +71,7 @@ function PaymentForm({ onPaymentAdded }) {
         // Reset form
         setMontant(0);
         setDatePaiement("");
-        setMoisConcerne("");
-        setStatus("En attente");
+        setStatus("attente");
         setLocataireId("");
         
         // Notify parent component
@@ -91,24 +88,6 @@ function PaymentForm({ onPaymentAdded }) {
     } finally {
       setLoading(false);
     }
-  };
-
-  // Generate months options (current month + 11 previous months)
-  const generateMonthOptions = () => {
-    const options = [];
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
-    const currentYear = currentDate.getFullYear();
-    
-    for (let i = 0; i < 12; i++) {
-      const monthIndex = (currentMonth - i) < 0 ? (12 + (currentMonth - i)) : (currentMonth - i);
-      const year = (currentMonth - i) < 0 ? currentYear - 1 : currentYear;
-      const monthName = new Date(year, monthIndex).toLocaleString('fr-FR', { month: 'long' });
-      const value = `${monthName} ${year}`;
-      options.push(<option key={value} value={value}>{value}</option>);
-    }
-    
-    return options;
   };
 
   return (
@@ -163,21 +142,6 @@ function PaymentForm({ onPaymentAdded }) {
         
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Mois concerné
-          </label>
-          <select
-            value={moisConcerne}
-            onChange={(e) => setMoisConcerne(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            required
-          >
-            <option value="">Sélectionnez un mois</option>
-            {generateMonthOptions()}
-          </select>
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
             Statut
           </label>
           <select
@@ -186,9 +150,9 @@ function PaymentForm({ onPaymentAdded }) {
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             required
           >
-            <option value="Payé">Payé</option>
-            <option value="En attente">En attente</option>
-            <option value="Retard">Retard</option>
+            <option value="paye" className="text-green-600 font-semibold">Payé</option>
+            <option value="attente" className="text-yellow-600 font-semibold">En attente</option>
+            <option value="retard" className="text-red-600 font-semibold">Retard</option>
           </select>
         </div>
         

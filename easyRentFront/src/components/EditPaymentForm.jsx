@@ -4,12 +4,12 @@ import { useAuth } from "../Authentification/AuthContext";
 function EditPaymentForm({ payment, onClose, onPaymentUpdated }) {
   const [montant, setMontant] = useState(0);
   const [datePaiement, setDatePaiement] = useState("");
-  const [moisConcerne, setMoisConcerne] = useState("");
-  const [status, setStatus] = useState("En attente");
+  const [status, setStatus] = useState("attente");
   const [locataireInfo, setLocataireInfo] = useState(null);
   const [bienInfo, setBienInfo] = useState(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isLoadingBien, setIsLoadingBien] = useState(false);
   const { token } = useAuth();
 
   useEffect(() => {
@@ -21,7 +21,6 @@ function EditPaymentForm({ payment, onClose, onPaymentUpdated }) {
       const formattedDate = date.toISOString().slice(0, 16);
       setDatePaiement(formattedDate);
       
-      setMoisConcerne(payment.moisConcerne);
       setStatus(payment.status);
       
       // Fetch locataire info
@@ -44,8 +43,13 @@ function EditPaymentForm({ payment, onClose, onPaymentUpdated }) {
         setLocataireInfo(data);
         
         // If locataire has bien information, fetch it
-        if (data.biens && data.biens.length > 0) {
-          fetchBienInfo(data.biens[0]);
+        if (data.biens) {
+          // Biens can be a string (URL) or an array of URLs
+          if (typeof data.biens === 'string') {
+            await fetchBienInfo(data.biens);
+          } else if (Array.isArray(data.biens) && data.biens.length > 0) {
+            await fetchBienInfo(data.biens[0]);
+          }
         }
       }
     } catch (error) {
@@ -55,7 +59,9 @@ function EditPaymentForm({ payment, onClose, onPaymentUpdated }) {
   
   const fetchBienInfo = async (bienUrl) => {
     try {
-      const bienId = bienUrl.split('/').pop();
+      setIsLoadingBien(true);
+      const bienId = typeof bienUrl === 'string' ? bienUrl.split('/').pop() : bienUrl;
+      
       const response = await fetch(`http://localhost:8080/api/biens/${bienId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -66,9 +72,13 @@ function EditPaymentForm({ payment, onClose, onPaymentUpdated }) {
       if (response.ok) {
         const data = await response.json();
         setBienInfo(data);
+      } else {
+        console.error(`Erreur: ${response.status} - Le bien n'a pas pu être récupéré`);
       }
     } catch (error) {
       console.error("Erreur lors de la récupération des informations du bien:", error);
+    } finally {
+      setIsLoadingBien(false);
     }
   };
 
@@ -77,7 +87,7 @@ function EditPaymentForm({ payment, onClose, onPaymentUpdated }) {
     setLoading(true);
 
     // Basic validation
-    if (!montant || !datePaiement || !moisConcerne) {
+    if (!montant || !datePaiement) {
       setMessage("Tous les champs doivent être remplis");
       setLoading(false);
       return;
@@ -86,7 +96,6 @@ function EditPaymentForm({ payment, onClose, onPaymentUpdated }) {
     const paymentData = {
       montant: Number(montant),
       datePaiement,
-      moisConcerne,
       status,
       locataire: payment.locataire
     };
@@ -124,24 +133,6 @@ function EditPaymentForm({ payment, onClose, onPaymentUpdated }) {
     }
   };
 
-  // Generate months options (current month + 11 previous months)
-  const generateMonthOptions = () => {
-    const options = [];
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
-    const currentYear = currentDate.getFullYear();
-    
-    for (let i = 0; i < 12; i++) {
-      const monthIndex = (currentMonth - i) < 0 ? (12 + (currentMonth - i)) : (currentMonth - i);
-      const year = (currentMonth - i) < 0 ? currentYear - 1 : currentYear;
-      const monthName = new Date(year, monthIndex).toLocaleString('fr-FR', { month: 'long' });
-      const value = `${monthName} ${year}`;
-      options.push(<option key={value} value={value}>{value}</option>);
-    }
-    
-    return options;
-  };
-
   if (!payment) {
     return null;
   }
@@ -156,10 +147,21 @@ function EditPaymentForm({ payment, onClose, onPaymentUpdated }) {
           </button>
         </div>
         
-        {bienInfo && (
+        {/* Affichage du bien avec un état de chargement */}
+        {isLoadingBien ? (
+          <div className="mb-4 p-3 bg-blue-50 rounded-md animate-pulse">
+            <p className="h-4 bg-blue-200 rounded w-3/4 mb-2"></p>
+            <p className="h-3 bg-blue-100 rounded w-1/2"></p>
+          </div>
+        ) : bienInfo ? (
           <div className="mb-4 p-3 bg-blue-50 rounded-md">
             <h3 className="font-semibold">Bien: {bienInfo.titre}</h3>
             <p className="text-sm text-gray-600">{bienInfo.adresse}</p>
+            <p className="text-sm text-gray-600 mt-1">{bienInfo.type} - {bienInfo.surface} m² - {bienInfo.loyer} €</p>
+          </div>
+        ) : (
+          <div className="mb-4 p-3 bg-gray-50 rounded-md">
+            <p className="text-sm text-gray-600">Aucune information sur le bien disponible</p>
           </div>
         )}
         
@@ -197,21 +199,9 @@ function EditPaymentForm({ payment, onClose, onPaymentUpdated }) {
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               required
             />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Mois concerné
-            </label>
-            <select
-              value={moisConcerne}
-              onChange={(e) => setMoisConcerne(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              required
-            >
-              <option value="">{moisConcerne || "Sélectionnez un mois"}</option>
-              {generateMonthOptions()}
-            </select>
+            <p className="text-xs text-gray-500 mt-1">
+              Le mois concerné sera automatiquement déterminé à partir de cette date.
+            </p>
           </div>
           
           <div>
@@ -224,9 +214,9 @@ function EditPaymentForm({ payment, onClose, onPaymentUpdated }) {
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               required
             >
-              <option value="Payé">Payé</option>
-              <option value="En attente">En attente</option>
-              <option value="Retard">Retard</option>
+              <option value="paye" className="text-green-600 font-semibold">Payé</option>
+              <option value="attente" className="text-yellow-600 font-semibold">En attente</option>
+              <option value="retard" className="text-red-600 font-semibold">Retard</option>
             </select>
           </div>
           

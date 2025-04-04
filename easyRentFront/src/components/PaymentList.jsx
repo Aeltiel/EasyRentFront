@@ -154,14 +154,27 @@ function PaymentList({ onRefresh, onEditPayment }) {
 
   const getStatusClass = (status) => {
     switch(status) {
-      case 'Payé':
+      case 'paye':
         return 'bg-green-100 text-green-800';
-      case 'En attente':
+      case 'attente':
         return 'bg-yellow-100 text-yellow-800';
-      case 'Retard':
+      case 'retard':
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusLabel = (status) => {
+    switch(status) {
+      case 'paye':
+        return 'Payé';
+      case 'attente':
+        return 'En attente';
+      case 'retard':
+        return 'Retard';
+      default:
+        return status;
     }
   };
 
@@ -184,22 +197,6 @@ function PaymentList({ onRefresh, onEditPayment }) {
     <div className="p-6 bg-white rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold">Liste des règlements</h2>
-        <div className="flex items-center">
-          <label htmlFor="bienFilter" className="mr-2">Filtrer par bien:</label>
-          <select 
-            id="bienFilter"
-            value={selectedBienId}
-            onChange={(e) => setSelectedBienId(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="all">Tous les biens</option>
-            {biens.map(bien => (
-              <option key={bien.id} value={bien.id.toString()}>
-                {bien.titre}
-              </option>
-            ))}
-          </select>
-        </div>
       </div>
       
       {filteredPayments.length === 0 ? (
@@ -209,32 +206,25 @@ function PaymentList({ onRefresh, onEditPayment }) {
           <table className="min-w-full bg-white">
             <thead>
               <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                <th className="py-3 px-4 text-left">Bien</th>
                 <th className="py-3 px-4 text-left">Locataire</th>
                 <th className="py-3 px-4 text-left">Montant</th>
                 <th className="py-3 px-4 text-left">Date de paiement</th>
-                <th className="py-3 px-4 text-left">Mois concerné</th>
                 <th className="py-3 px-4 text-left">Statut</th>
                 <th className="py-3 px-4 text-center">Actions</th>
               </tr>
             </thead>
             <tbody className="text-gray-600 text-sm">
               {filteredPayments.map((payment) => {
-                const bien = getBienForPayment(payment);
                 return (
                   <tr key={payment.id} className="border-b border-gray-200 hover:bg-gray-50">
-                    <td className="py-3 px-4">
-                      {bien ? bien.titre : "Bien inconnu"}
-                    </td>
                     <td className="py-3 px-4">{getLocataireNameById(payment.locataire)}</td>
                     <td className="py-3 px-4">{payment.montant} €</td>
                     <td className="py-3 px-4">
                       {new Date(payment.datePaiement).toLocaleString('fr-FR')}
                     </td>
-                    <td className="py-3 px-4">{payment.moisConcerne}</td>
                     <td className="py-3 px-4">
                       <span className={`px-2 py-1 rounded-full text-xs ${getStatusClass(payment.status)}`}>
-                        {payment.status}
+                        {getStatusLabel(payment.status)}
                       </span>
                     </td>
                     <td className="py-3 px-4 text-center">
