@@ -12,10 +12,10 @@ function App() {
       <Routes>
         {/* Route publique */}
         <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<DashboardPage />} />
 
         {/* Routes protégées */}
         <Route element={<AuthRoute />}>
-          <Route path="/" element={<DashboardPage />} />
           <Route path="/bien" element={<BienPage />} />
           <Route path="/bien/:id" element={<DetailBien />} />
         </Route>
