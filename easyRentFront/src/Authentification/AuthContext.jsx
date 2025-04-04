@@ -28,15 +28,17 @@ export function AuthProvider({ children }) {
   }
 
   //fonction pour enregistrer le token dans le local storage
-  function updateToken(newToken) {
+  function updateToken(newToken, newID) {
     setRawToken(newToken);
     setToken(parseToken(newToken));
+    setUserID(newID);
     localStorage.setItem("token", typeof newToken === 'object' ? JSON.stringify(newToken) : newToken);
   }
 
   //fonction de déconnexion passant par la suppression des données présente dans le LocalStorage
   function logOut() {
     localStorage.removeItem("token");
+    localStorage.removeItem("userId");
     localStorage.removeItem("userId");
 
     setRawToken("");
