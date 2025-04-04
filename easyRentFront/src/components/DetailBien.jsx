@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Nav from './Nav';
 import { useAuth } from '../Authentification/AuthContext';
@@ -18,7 +18,85 @@ function DetailBien() {
   const [ajoutLocataireReussi, setAjoutLocataireReussi] = useState(false);
   const [locataireAjoute, setLocataireAjoute] = useState(null);
   const [locataires, setLocataires] = useState([]);
-  const [locatairesLoading, setLocatairesLoading] = useState(true); // Ajout d'un état de chargement pour les locataires
+  const [locatairesLoading, setLocatairesLoading] = useState(true);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [base64Blob, setBase64Blob] = useState('');
+  const [locataireIdPourDocument, setLocataireIdPourDocument] = useState(null);
+  const [documentsParLocataire, setDocumentsParLocataire] = useState({});
+
+  
+  const fileInputRef = useRef(null);
+
+  const fetchDocuments = async (locataireId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/documents/${locataireId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`Erreur lors de la récupération des documents du locataire ${locataireId}: ${response.status}`);
+      }
+      const data = await response.json();
+      setDocumentsParLocataire((prev) => ({ ...prev, [locataireId]: data }));
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setBase64Blob(reader.result.split(',')[1]); // Extrait la partie base64
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleUploadDocument = async () => {
+    if (!selectedFile || !locataireIdPourDocument) {
+      alert('Veuillez sélectionner un fichier et un locataire.');
+      return;
+    }
+
+    const documentData = {
+      nom: selectedFile.name,
+      documentBlob: base64Blob,
+      dateAjout: new Date().toISOString(),
+      locataire: `/api/locataires/${locataireIdPourDocument}`,
+    };
+
+    try {
+      const response = await fetch('http://localhost:8080/api/documents', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(documentData),
+      });
+
+      if (response.ok) {
+        alert('Document envoyé avec succès !');
+        setSelectedFile(null);
+        setBase64Blob('');
+        setLocataireIdPourDocument(null);
+      } else {
+        alert('Erreur lors de l\'envoi du document.');
+      }
+    } catch (error) {
+      console.error('Erreur :', error);
+      alert('Une erreur s\'est produite lors de l\'envoi du document.');
+    }
+  };
+
+  const handleAjoutDocumentClick = (locataireId) => {
+    setLocataireIdPourDocument(locataireId);
+    fileInputRef.current.click();
+  };
 
 
   const { token } = useAuth();
@@ -147,84 +225,117 @@ function DetailBien() {
       <div className="bg-white mb-2 shadow-lg rounded-lg">
         <Nav />
       </div>
-      <div className="p-8">
-        <h1 className="text-2xl font-bold mb-4">{bien.titre}</h1>
-        <div className="mb-4">
-          <strong>Adresse</strong>
-          <div>{bien.adresse}</div>
-        </div>
-        <div className="mb-4">
-          <strong>Type</strong>
-          <div>{bien.type}</div>
+      <div className="p-3 flex gap-2.5"> {/* Ajout de gap-2.5 (10px) */}
+        <div className="w-1/2 bg-white rounded-lg shadow-md p-6">
+          <h1 className="text-2xl font-bold mb-4">{bien.titre}</h1>
           <div className="mb-4">
-            <strong>Surface</strong> {bien.surface} m²
+            <strong>Adresse</strong>
+            <div>{bien.adresse}</div>
           </div>
-        </div>
-        <div className="mb-4">
-          <strong>Loyer mensuel</strong>
-          <div className="text-xl">
-            <span className="text-green-600">{bien.loyer}</span> €
+          <div className="mb-4">
+            <strong>Type</strong>
+            <div>{bien.type}</div>
+            <div className="mb-4">
+              <strong>Surface</strong> {bien.surface} m²
+            </div>
           </div>
-        </div>
-        {locataireAjoute && (
-          <div className="mt-4 border p-4 rounded-md bg-gray-100">
-            <h3 className="text-lg font-semibold mb-2">Locataire ajouté :</h3>
-            <p>
-              <strong>Nom Prénom:</strong> {locataireAjoute.nom} {locataireAjoute.prenom}
-            </p>
-            <p>
-              <strong>Email :</strong> {locataireAjoute.email}
-            </p>
-            <p>
-              <strong>Téléphone :</strong> {locataireAjoute.telephone}
-            </p>
-            <p>
-              <strong>Date d'entrée :</strong> {new Date(locataireAjoute.dateEntree).toLocaleDateString()}
-            </p>
+          <div className="mb-4">
+            <strong>Loyer mensuel</strong>
+            <div className="text-xl">
+              <span className="text-green-600">{bien.loyer}</span> €
+            </div>
           </div>
-        )}
-        <h2 className="font-bold mt-8">Locataires</h2>
-        {locataires.length > 0 ? (
-          <ul className="list-disc list-inside">
-            {locataires.map((locataire) => (
-              <li key={locataire.id}>
-                {locataire.nom} {locataire.prenom}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>Aucun locataire associé à ce bien pour le moment.</p>
-        )}
-        <button
-          onClick={supprimerBien}
-          disabled={suppressionEnCours}
-          className="!bg-red-500 !hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2 mt-4"
-        >
-          {suppressionEnCours ? 'Suppression...' : 'Supprimer'}
-        </button>
-        <button
-          onClick={modifierBien}
-          disabled={modificationEnCours}
-          className="!bg-yellow-500 !hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2 mt-4"
-        >
-          {modificationEnCours ? 'Modification...' : 'Modifier'}
-        </button>
-        <button
-          onClick={handleAjouterLocataireClick}
-          className="!bg-green-500 !hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4"
-        >
-          Ajouter un locataire
-        </button>
-        {error && <p className="text-red-500 mt-2">{error}</p>}
-        {suppressionReussie && <p className="text-green-500 mt-2">Bien supprimé avec succès !</p>}
-        {ajoutLocataireReussi && <p className="text-green-500 mt-2">Locataire ajouté avec succès !</p>}
+          {locataireAjoute && (
+            <div className="mt-4 border p-4 rounded-md bg-gray-100">
+              <h3 className="text-lg font-semibold mb-2">Locataire ajouté :</h3>
+              <p>
+                <strong>Nom Prénom:</strong> {locataireAjoute.nom} {locataireAjoute.prenom}
+              </p>
+              <p>
+                <strong>Email :</strong> {locataireAjoute.email}
+              </p>
+              <p>
+                <strong>Téléphone :</strong> {locataireAjoute.telephone}
+              </p>
+              <p>
+                <strong>Date d'entrée :</strong> {new Date(locataireAjoute.dateEntree).toLocaleDateString()}
+              </p>
+            </div>
+          )}
+          <h2 className="font-bold mt-8">Locataires</h2>
+          {locataires.length > 0 ? (
+            <ul className="list-disc list-inside">
+              {locataires.map((locataire) => (
+                <li key={locataire.id}>
+                  {locataire.nom} {locataire.prenom}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>Aucun locataire associé à ce bien pour le moment.</p>
+          )}
+          <button
+            onClick={supprimerBien}
+            disabled={suppressionEnCours}
+            className="!bg-red-500 !hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2 mt-4"
+          >
+            {suppressionEnCours ? 'Suppression...' : 'Supprimer'}
+          </button>
+          <button
+            onClick={modifierBien}
+            disabled={modificationEnCours}
+            className="!bg-yellow-500 !hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mr-2 mt-4"
+          >
+            {modificationEnCours ? 'Modification...' : 'Modifier'}
+          </button>
+          <button
+            onClick={handleAjouterLocataireClick}
+            className="!bg-green-500 !hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4"
+          >
+            Ajouter un locataire
+          </button>
+          {error && <p className="text-red-500 mt-2">{error}</p>}
+          {suppressionReussie && <p className="text-green-500 mt-2">Bien supprimé avec succès !</p>}
+          {ajoutLocataireReussi && <p className="text-green-500 mt-2">Locataire ajouté avec succès !</p>}
 
-        {afficherFormulaireLocataire && (
-          <div className="mt-8">
-            <h2 className="text-xl font-bold mb-4">Ajouter un locataire</h2>
-            <FormulaireLoc bienId={id} onLocataireAjoute={handleLocataireAjoute} />
+          {afficherFormulaireLocataire && (
+            <div className="mt-8">
+              <h2 className="text-xl font-bold mb-4">Ajouter un locataire</h2>
+              <FormulaireLoc bienId={id} onLocataireAjoute={handleLocataireAjoute} />
+            </div>
+          )}
+        </div>
+        <div className="w-1/2 rounded-lg max-h-screen overflow-y-auto">
+          <div className="space-y-3">
+            {locataires.map((locataire) => (
+              <div key={locataire.id} className="bg-white rounded-lg shadow-md p-6">
+                <h4 className="font-semibold text-2xl pb-5">
+                  {locataire.nom} {locataire.prenom}
+                </h4>
+                <p className="pb-5">Email : {locataire.email}</p>
+                <p className="pb-5">Téléphone : {locataire.telephone}</p>
+                <strong>
+                <h2>Documents</h2>
+              </strong>
+              <button
+                onClick={() => handleAjoutDocumentClick(locataire.id)}
+                className="bg-green-500 hover:bg-green-700 text-white font-bold rounded-full w-8 h-8 flex items-center justify-center mt-4"
+              >
+                +
+              </button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+              />
+              {selectedFile && locataireIdPourDocument === locataire.id && (
+                <button onClick={handleUploadDocument}>Envoyer Document</button>
+              )}
+              </div>
+            ))}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
